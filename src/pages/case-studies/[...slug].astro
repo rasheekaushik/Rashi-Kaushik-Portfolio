@@ -1,0 +1,50 @@
+---
+import Base from "../../layouts/Base.astro";
+import { site } from "../../site.config";
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const cases = await getCollection("work", ({ data }) => !data.draft);
+  return cases.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+
+<Base title={`${d.title} — ${site.name}`} description={d.dek}>
+  <article class="reading">
+    <a class="back" href="/">&larr; All case studies</a>
+
+    <h1 class="art-title">{d.title}</h1>
+    <p class="art-dek">{d.dek}</p>
+
+    <dl class="art-meta">
+      <div>
+        <dt>Period</dt>
+        <dd>{d.period}</dd>
+      </div>
+      <div>
+        <dt>Duration</dt>
+        <dd>{d.duration}</dd>
+      </div>
+      <div>
+        <dt>Outcome</dt>
+        <dd>{d.outcome ?? "—"}</dd>
+      </div>
+      <div>
+        <dt>Stack</dt>
+        <dd>{d.stack.join(" · ")}</dd>
+      </div>
+    </dl>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</Base>

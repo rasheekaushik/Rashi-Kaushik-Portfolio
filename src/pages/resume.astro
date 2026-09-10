@@ -1,0 +1,143 @@
+---
+import Base from "../layouts/Base.astro";
+import Toolkit from "../components/Toolkit.astro";
+import { site } from "../site.config";
+
+// Delivery-first ordering: what she builds, then what she keeps running.
+const responsibilities = [
+  "Automated infrastructure provisioning, configuration management and operational workflows with Terraform, Ansible, Python, Bash and PowerShell — cutting manual effort and making deployments repeatable.",
+  "Built and optimised CI/CD pipelines covering build, test, deployment and release across development, staging and production environments.",
+  "Designed, deployed and supported highly available production infrastructure across AWS, Azure, OCI, Linux, Docker and Kubernetes.",
+  "Ran containerised workloads on Kubernetes and Docker — deployment troubleshooting, capacity planning, performance tuning and day-to-day production support.",
+  "Built and maintained observability platforms on Prometheus, Grafana, ELK, Zabbix and CloudWatch, including centralised logging and dashboards.",
+  "Developed automation for monitoring, alert management, incident response, health checks and operational remediation.",
+  "Led production incident management, root cause analysis, problem management and service restoration, reducing mean time to restore.",
+  "Defined and reported against SLIs, SLOs and availability targets, with alerting and log analytics tuned to them.",
+  "Held 24×7 on-call for critical production systems — triage, escalation management and post-incident review.",
+  "Worked across AWS EC2, EKS, Lambda, S3, IAM, VPC, SNS and CloudWatch to deploy, secure and monitor enterprise workloads.",
+];
+
+const projects = [
+  {
+    title: "Cloud-Native Observability Platform",
+    period: "2024",
+    duration: "~3 months",
+    stack: "Prometheus · Grafana · ELK · Kubernetes · AWS · Terraform · Python",
+    body: "Built a cloud-native observability platform covering containerised applications and infrastructure across AWS and Kubernetes. Prometheus, Grafana and ELK provide centralised metrics, logs, dashboards and alerting, with Terraform and Python automation making the platform and its operational workflows repeatable.",
+  },
+  {
+    title: "AI-Assisted Alert Correlation Engine",
+    period: "2024",
+    duration: "~2 months",
+    stack: "Python · GenAI · Prometheus · ELK · REST APIs",
+    body: "Developed an alert correlation engine in Python that aggregates, deduplicates, enriches and prioritises alerts from ELK and Prometheus. A generative model writes incident context and summaries on top, so on-call opens a grouped and ranked view instead of a raw notification feed — accelerating triage and cutting alert fatigue.",
+  },
+];
+---
+
+<Base
+  title={`Résumé — ${site.name}`}
+  description={`Résumé of ${site.name}, ${site.role} — ${site.yearsExperience} across AWS, Azure, OCI, Kubernetes, Terraform, CI/CD and observability.`}
+>
+  <div class="cv">
+    <header class="cv-head">
+      <p class="mark">Résumé &nbsp;·&nbsp; {site.lastReviewed}</p>
+      <h1 class="cv-name">{site.name}</h1>
+      <p class="role">{site.role}</p>
+
+      <p class="cv-summary">
+        DevOps and Site Reliability engineer with {site.yearsExperience} building
+        and running production systems on Kubernetes across AWS, Azure and OCI.
+        Infrastructure as code, CI/CD, observability and incident response — with
+        a track record of
+        automating <strong>65%</strong> of alert processing, cutting alert noise
+        <strong>40%</strong>, reducing mean time to restore <strong>25%</strong>,
+        and halving recurring incidents.
+      </p>
+
+      <div class="cv-contact">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <a
+          href={site.linkedin}
+          target="_blank"
+          rel="me noopener noreferrer"
+          >linkedin.com/in/rashikaushik<span class="sr-only">
+            (opens in a new tab)</span
+          ></a
+        >
+        <a href={site.github} target="_blank" rel="me noopener noreferrer"
+          >github.com/rasheekaushik<span class="sr-only">
+            (opens in a new tab)</span
+          ></a
+        >
+        <span>{site.location}</span>
+      </div>
+
+      <div class="pills">
+        <a class="pill" data-primary href={`mailto:${site.email}`}>
+          Get in touch
+        </a>
+        <a
+          class="pill"
+          href={site.resumePdf}
+          target="_blank"
+          rel="noopener"
+          >Download PDF<span class="sr-only"> (opens in a new tab)</span></a
+        >
+      </div>
+    </header>
+
+    <section class="cv-sec">
+      <h2>Experience</h2>
+      <div class="cv-entry">
+        <div class="cv-when">
+          {site.tenure}<br />{site.yearsExperience}
+        </div>
+        <div class="cv-what">
+          <h3>DevOps / Site Reliability Engineer</h3>
+          <span class="org">{site.employer} &nbsp;·&nbsp; {site.location}</span>
+          <ul>
+            {responsibilities.map((r) => <li>{r}</li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="cv-sec">
+      <h2>Projects</h2>
+      {
+        projects.map((p) => (
+          <div class="cv-entry">
+            <div class="cv-when">
+              {p.period}
+              <br />
+              {p.duration}
+            </div>
+            <div class="cv-what">
+              <h3>{p.title}</h3>
+              <span class="org">{p.stack}</span>
+              <p>{p.body}</p>
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="cv-sec">
+      <h2>Skills</h2>
+      <Toolkit />
+    </section>
+
+    <section class="cv-sec">
+      <h2>Education</h2>
+      <div class="cv-entry">
+        <div class="cv-when">2022</div>
+        <div class="cv-what">
+          <h3>{site.education.degree}</h3>
+          <span class="org">{site.education.school}</span>
+          <p>Grade {site.education.detail}</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>

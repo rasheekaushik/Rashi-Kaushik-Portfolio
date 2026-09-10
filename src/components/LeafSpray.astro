@@ -1,0 +1,93 @@
+---
+/**
+ * One corner spray. Rendered twice by Decor.astro — top-left, and bottom-right
+ * flipped 180° in CSS. The leaf and rib shapes live in Decor's <defs>, so both
+ * sprays and the drifting leaves share one definition.
+ */
+export interface Props {
+  variant: "tl" | "br";
+}
+const { variant } = Astro.props;
+
+// [x, y, rotation, scale] — translate to a point on a stem, rotate to fan it
+// out, scale for depth.
+const filled: [number, number, number, number][] = [
+  [60, 0, -30, 0.9],
+  [150, 25, -28, 1.0],
+  [250, 50, -25, 0.95],
+  [350, 72, -22, 0.85],
+  [70, 35, 20, 0.85],
+  [140, 95, 25, 0.9],
+  [200, 175, 35, 0.85],
+  [40, 70, 60, 0.8],
+  [75, 160, 65, 0.85],
+  [105, 260, 70, 0.8],
+];
+
+const outlined: [number, number, number, number][] = [
+  [60, 0, 25, 0.8],
+  [150, 25, 30, 0.85],
+  [250, 50, 28, 0.8],
+  [350, 72, 26, 0.7],
+  [430, 92, 8, 0.7],
+  [70, 35, 70, 0.7],
+  [140, 95, 75, 0.75],
+  [200, 175, 85, 0.7],
+  [235, 235, 50, 0.75],
+  [40, 70, 110, 0.7],
+  [75, 160, 115, 0.72],
+  [105, 260, 120, 0.68],
+  [125, 350, 80, 0.7],
+];
+
+// Every third leaf takes the second tone, so the tint varies without a
+// pattern the eye can lock onto.
+const tone = (i: number) => (i % 3 === 2 ? "l-b" : "l-a");
+---
+
+<svg
+  class:list={["decor", `decor-${variant}`]}
+  viewBox="0 0 620 560"
+  fill="none"
+  aria-hidden="true"
+  focusable="false"
+  preserveAspectRatio="xMinYMin meet"
+>
+  <g class="d-stems">
+    <path d="M-30 -30 C 90 40 170 110 235 235"></path>
+    <path d="M-30 -30 C 55 95 95 210 125 350"></path>
+    <path d="M-30 -30 C 140 15 300 55 430 95"></path>
+    <path d="M-30 -30 C 40 70 30 150 55 235"></path>
+  </g>
+
+  <g class="d-fill">
+    {
+      filled.map(([x, y, r, s], i) => (
+        <use
+          href="#leaf"
+          class={tone(i)}
+          transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}
+        />
+      ))
+    }
+  </g>
+
+  <g class="d-out">
+    {
+      outlined.map(([x, y, r, s], i) => (
+        <g transform={`translate(${x} ${y}) rotate(${r}) scale(${s})`}>
+          <use href="#leaf" class={tone(i)} />
+          <use href="#rib" class="d-rib" />
+        </g>
+      ))
+    }
+  </g>
+
+  <g class="d-dots">
+    <circle cx="196" cy="18" r="4"></circle>
+    <circle cx="318" cy="44" r="3"></circle>
+    <circle cx="98" cy="118" r="3.5"></circle>
+    <circle cx="162" cy="308" r="3"></circle>
+    <circle cx="52" cy="212" r="4"></circle>
+  </g>
+</svg>

@@ -1,0 +1,188 @@
+---
+import Base from "../layouts/Base.astro";
+import Butterfly from "../components/Butterfly.astro";
+import Toolkit from "../components/Toolkit.astro";
+import { site, lenses, systems } from "../site.config";
+import { getCollection } from "astro:content";
+
+const domains = (await getCollection("domains")).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+// Delivery leads. Rendered at rest, so the page is complete before any
+// JavaScript runs.
+const initial = lenses.delivery;
+---
+
+<Base
+  title={`${site.name} — ${site.role}`}
+  description={`${site.role} with ${site.yearsExperience} of production experience across AWS, Azure, OCI, Kubernetes, Terraform and the Prometheus/Grafana/ELK stack. Infrastructure automation, CI/CD, observability and incident response.`}
+>
+  <div class="split">
+    <!-- ===================== voice ===================== -->
+    <aside class="voice">
+      <div class="ident">
+        <h1 class="name">{site.name}<Butterfly variant="land" /></h1>
+        <p class="mark">{site.shortRole} &nbsp;·&nbsp; {site.location}</p>
+      </div>
+
+      <div>
+        <p class="role" id="lens-role">{initial.role}</p>
+        <p class="hi">Production doesn't stay up <em>by accident</em>.</p>
+      </div>
+
+      <p class="intro" id="lens-intro">{initial.summary}</p>
+
+      <div class="lens-top">
+        <span class="lens-hint">View as</span>
+        <div class="lens-switch" role="group" aria-label="Choose framing">
+          <button type="button" data-lens="delivery" aria-pressed="true">
+            Delivery
+          </button>
+          <button type="button" data-lens="reliability" aria-pressed="false">
+            Reliability
+          </button>
+        </div>
+      </div>
+
+      <div class="pills">
+        <a class="pill" data-primary href="#contact">Get in touch</a>
+        <a class="pill" href="/resume/" target="_blank" rel="noopener">
+          Résumé<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a
+          class="pill"
+          href={site.linkedin}
+          target="_blank"
+          rel="me noopener noreferrer"
+        >
+          LinkedIn<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a
+          class="pill"
+          href={site.github}
+          target="_blank"
+          rel="me noopener noreferrer"
+        >
+          GitHub<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ===================== feed ===================== -->
+    <div class="feed">
+      <!-- domains -->
+      <section class="band" id="work">
+        <div class="band-head">
+          <h2>What I look after</h2>
+          <span class="n">{String(domains.length).padStart(2, "0")} domains</span>
+        </div>
+
+        <div class="cards">
+          {
+            domains.map(({ id, data: d }) => (
+              <a
+                class="card"
+                href={`/work/${id}/`}
+                style={`--bg-l:${d.bg};--ink-l:${d.ink};--bg-d:${d.bgDark};--ink-d:${d.inkDark};`}
+                aria-label={`${d.title} — read more`}
+              >
+                <span class="card-go" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 17L17 7M17 7H8M17 7v9" />
+                  </svg>
+                </span>
+                <h3 class="card-label">{d.label}</h3>
+                <p class="card-blurb">{d.blurb}</p>
+                <div class="card-foot" data-nometric={d.metric ? undefined : true}>
+                  {d.metric && (
+                    <span class="card-metric">
+                      <span class="v">{d.metric}</span>
+                      <span class="l">{d.metricLabel}</span>
+                    </span>
+                  )}
+                  <span class="card-stack">{d.stack}</span>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- toolkit -->
+      <section class="band" id="systems">
+        <div class="band-head">
+          <h2>Toolkit</h2>
+          <span class="n">
+            {systems.reduce((n, g) => n + g.items.length, 0)} tools &amp; practices
+          </span>
+        </div>
+
+        <Toolkit />
+      </section>
+
+      <!-- contact -->
+      <section class="band" id="contact">
+        <div>
+          <h2 class="talk">Let's <em>talk</em>.</h2>
+          <p class="contact-line">
+            Open to DevOps, Platform and Site Reliability roles. Email is the
+            quickest way to reach me.
+          </p>
+          <div class="pills">
+            <a class="pill" data-primary href={`mailto:${site.email}`}>
+              {site.email}
+            </a>
+            <a
+              class="pill"
+              href={site.linkedin}
+              target="_blank"
+              rel="me noopener noreferrer"
+            >
+              LinkedIn<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+            <a
+              class="pill"
+              href={site.github}
+              target="_blank"
+              rel="me noopener noreferrer"
+            >
+              GitHub<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+            <a class="pill" href="/resume/" target="_blank" rel="noopener">
+              Résumé<span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ lenses }}>
+    (function () {
+      var role = document.getElementById("lens-role");
+      var intro = document.getElementById("lens-intro");
+      var buttons = document.querySelectorAll(".lens-switch button");
+      if (!role || !intro) return;
+
+      function render(key) {
+        var L = lenses[key];
+        if (!L) return;
+        role.textContent = L.role;
+        intro.textContent = L.summary;
+        buttons.forEach(function (b) {
+          b.setAttribute(
+            "aria-pressed",
+            b.getAttribute("data-lens") === key ? "true" : "false",
+          );
+        });
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener("click", function () {
+          render(b.getAttribute("data-lens"));
+        });
+      });
+    })();
+  </script>
+</Base>

@@ -1,0 +1,46 @@
+---
+/**
+ * Two variants:
+ *   "land" — flies in from off-screen and perches on the end of the name,
+ *            then settles to an occasional slow wing beat.
+ *   "roam" — never lands; loops a long circuit around the viewport.
+ *
+ * The flight and the resting bob are both transforms, so they sit on nested
+ * elements rather than overwriting each other: the outer span moves, the
+ * inner svg bobs once it has landed.
+ *
+ * Under prefers-reduced-motion the global rule collapses the flight and
+ * `forwards` holds the final frame, so the landing butterfly simply starts
+ * already perched. The roaming one hides — frozen mid-air reads as a bug.
+ */
+export interface Props {
+  variant: "land" | "roam";
+}
+const { variant } = Astro.props;
+---
+
+<span class:list={["bfly", `bfly-${variant}`]} aria-hidden="true">
+  <svg class="bfly-svg" viewBox="0 0 40 34" fill="none" focusable="false">
+    <g class="bf-wing">
+      <path
+        class="bf-w"
+        d="M19 16 C 8 2, 0 6, 3 14 C 5 20, 13 20, 19 16 Z"></path>
+      <path
+        class="bf-w bf-w-lower"
+        d="M19 17 C 10 24, 5 30, 10 32 C 15 33, 18 24, 19 17 Z"></path>
+    </g>
+    <g class="bf-wing">
+      <path
+        class="bf-w"
+        d="M21 16 C 32 2, 40 6, 37 14 C 35 20, 27 20, 21 16 Z"></path>
+      <path
+        class="bf-w bf-w-lower"
+        d="M21 17 C 30 24, 35 30, 30 32 C 25 33, 22 24, 21 17 Z"></path>
+    </g>
+    <path
+      class="bf-body"
+      d="M20 10 C 21.4 14, 21.4 22, 20 27 C 18.6 22, 18.6 14, 20 10 Z"></path>
+    <path class="bf-ant" d="M20 11 C 18 7, 15 5, 13 4.5"></path>
+    <path class="bf-ant" d="M20 11 C 22 7, 25 5, 27 4.5"></path>
+  </svg>
+</span>

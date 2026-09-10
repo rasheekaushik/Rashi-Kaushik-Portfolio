@@ -1,0 +1,98 @@
+---
+import { readFileSync } from "node:fs";
+import * as simpleIcons from "simple-icons";
+import { systems } from "../site.config";
+
+/**
+ * Brand marks are inlined at build time — no CDN, no runtime request, and
+ * nothing to break if a third party moves a file. They render monochrome and
+ * pick up their brand colour on hover, so a wall of twenty brand palettes
+ * doesn't fight the page.
+ *
+ * Two sources, because simple-icons removed AWS, Azure, Oracle and PowerShell
+ * over trademark claims. See the note on `systems` in site.config.ts.
+ */
+type Mark = { path: string; viewBox: string; hex: string };
+
+function fromSimpleIcons(slug: string): Mark | null {
+  const key = "si" + slug.charAt(0).toUpperCase() + slug.slice(1);
+  const found = (simpleIcons as Record<string, any>)[key];
+  return found
+    ? { path: found.path, viewBox: "0 0 24 24", hex: found.hex }
+    : null;
+}
+
+function fromDevicon(ref: string, hex?: string, viewBoxOverride?: string): Mark | null {
+  const file = `node_modules/devicon/icons/${ref}.svg`;
+  let svg: string;
+  try {
+    svg = readFileSync(file, "utf8");
+  } catch {
+    return null;
+  }
+  // Every icon used here is a single path; bail loudly rather than render half.
+  const d = svg.match(/\sd="([^"]+)"/);
+  const viewBox = svg.match(/viewBox="([^"]+)"/);
+  if (!d || !viewBox) return null;
+  return {
+    path: d[1],
+    viewBox: viewBoxOverride ?? viewBox[1],
+    hex: hex ?? "888888",
+  };
+}
+
+function mark(icon?: string, hex?: string, viewBox?: string): Mark | null {
+  if (!icon) return null;
+  if (icon.startsWith("si:")) return fromSimpleIcons(icon.slice(3));
+  if (icon.startsWith("di:")) return fromDevicon(icon.slice(3), hex, viewBox);
+  return null;
+}
+
+// Fail the build rather than silently ship a pill with a missing logo.
+for (const group of systems) {
+  for (const item of group.items) {
+    const icon = "icon" in item ? item.icon : undefined;
+    const vb = "viewBox" in item ? item.viewBox : undefined;
+    if (icon && !mark(icon, "hex" in item ? item.hex : undefined, vb)) {
+      throw new Error(
+        `Toolkit: no mark resolved for "${item.name}" (icon: ${icon}). ` +
+          `Check the slug, or drop the icon field to render it as a text pill.`,
+      );
+    }
+  }
+}
+---
+
+<div class="tools">
+  {
+    systems.map((group) => (
+      <section class="tool-group">
+        <h3 class="tool-group-name">{group.group}</h3>
+        <ul class="pill-row">
+          {group.items.map((item) => {
+            const icon = mark(
+              "icon" in item ? item.icon : undefined,
+              "hex" in item ? item.hex : undefined,
+              "viewBox" in item ? item.viewBox : undefined,
+            );
+            return (
+              <li class="tool" style={icon ? `--brand:#${icon.hex}` : undefined}>
+                {icon && (
+                  <svg
+                    class="tool-mark"
+                    viewBox={icon.viewBox}
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <path d={icon.path} />
+                  </svg>
+                )}
+                <span>{item.name}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))
+  }
+</div>

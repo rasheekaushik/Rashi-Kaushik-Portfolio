@@ -1,0 +1,56 @@
+---
+import Butterfly from "./Butterfly.astro";
+import LeafSpray from "./LeafSpray.astro";
+
+/**
+ * The ambient layer: a leaf spray in each opposite corner and a few leaves
+ * drifting down the middle. All decorative — aria-hidden, pointer-events
+ * none, and painted below the content so text stays legible over it.
+ *
+ * The leaf and rib shapes are defined once here and referenced by every
+ * instance, so there is one shape in the document rather than thirty copies.
+ */
+
+// [left %, width px, duration s, negative delay s, horizontal drift px, spin deg]
+// Negative delays put them mid-flight on load, so the page is never briefly
+// empty of them.
+const drifting: [number, number, number, number, number, number][] = [
+  [8, 20, 26, -4, 60, 300],
+  [18, 15, 34, -18, -40, -260],
+  [29, 23, 29, -9, 80, 340],
+  [41, 17, 38, -25, -70, -300],
+  [52, 19, 31, -13, 45, 280],
+  [63, 14, 41, -30, -55, -320],
+  [74, 22, 27, -7, 90, 360],
+  [86, 16, 36, -21, -35, -280],
+  [94, 18, 33, -16, 65, 310],
+];
+---
+
+<svg class="d-defs" aria-hidden="true" focusable="false">
+  <defs>
+    <path id="leaf" d="M0 0 Q 34 -25 74 0 Q 34 25 0 0 Z"></path>
+    <path id="rib" d="M3 0 L 70 0"></path>
+  </defs>
+</svg>
+
+<LeafSpray variant="tl" />
+<LeafSpray variant="br" />
+
+<Butterfly variant="roam" />
+
+<div class="leaffall" aria-hidden="true">
+  {
+    drifting.map(([x, w, dur, delay, drift, spin], i) => (
+      <svg
+        class:list={["lf", i % 3 === 1 ? "lf-b" : "lf-a"]}
+        viewBox="0 0 74 50"
+        fill="none"
+        focusable="false"
+        style={`--x:${x}%;--w:${w}px;--dur:${dur}s;--delay:${delay}s;--drift:${drift}px;--spin:${spin}deg;`}
+      >
+        <use href="#leaf" transform="translate(0 25)" />
+      </svg>
+    ))
+  }
+</div>

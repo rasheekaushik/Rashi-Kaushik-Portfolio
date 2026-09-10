@@ -1,0 +1,69 @@
+---
+import Base from "../../layouts/Base.astro";
+import { site } from "../../site.config";
+import { getCollection, render } from "astro:content";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const domains = await getCollection("domains");
+  const sorted = domains.sort((a, b) => a.data.order - b.data.order);
+  return sorted.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, others: sorted.filter((d) => d.id !== entry.id) },
+  }));
+};
+
+const { entry, others } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+
+const tint = `--bg-l:${d.bg};--ink-l:${d.ink};--bg-d:${d.bgDark};--ink-d:${d.inkDark};`;
+---
+
+<Base
+  title={`${d.title} — ${site.name}`}
+  description={d.blurb}
+>
+  <div class="reading">
+    <a class="back" href="/#work">&larr; What I look after</a>
+
+    <header class="domain-hero" style={tint}>
+      <h1 class="domain-title">{d.title}</h1>
+      <p class="domain-blurb">{d.blurb}</p>
+      <div class="domain-foot">
+        {
+          d.metric && (
+            <span class="card-metric">
+              <span class="v">{d.metric}</span>
+              <span class="l">{d.metricLabel}</span>
+            </span>
+          )
+        }
+        <span class="card-stack">{d.stack}</span>
+      </div>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <nav class="more" aria-label="Other domains">
+      <p class="more-head">Also</p>
+      <ul>
+        {
+          others.map((o) => (
+            <li>
+              <a
+                href={`/work/${o.id}/`}
+                style={`--bg-l:${o.data.bg};--ink-l:${o.data.ink};--bg-d:${o.data.bgDark};--ink-d:${o.data.inkDark};`}
+              >
+                <span class="dot" aria-hidden="true" />
+                {o.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</Base>

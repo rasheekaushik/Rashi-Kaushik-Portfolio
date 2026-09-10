@@ -1,0 +1,18 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../site.config";
+---
+
+<Base title={`404 — ${site.name}`} description="That page does not exist.">
+  <div class="reading">
+    <p class="role">HTTP 404</p>
+    <h1 class="art-title">Nothing here.</h1>
+    <p class="art-dek">
+      The link is broken or the page has moved. Nothing is on fire — this one is
+      just a typo.
+    </p>
+    <div class="pills">
+      <a class="pill" data-primary href="/">Back to the start</a>
+    </div>
+  </div>
+</Base>
