@@ -9,7 +9,7 @@ export const site = {
   // GitHub -> Settings -> Pages, and drives canonical URLs, OG tags and the
   // sitemap. `githubUser` is the www CNAME target.
   // ---------------------------------------------------------------------
-  domain: "https://rashikaushik.com",
+  domain: "https://rashikaushik.in",
   githubUser: "rasheekaushik",
 
   name: "Rashi Kaushik",
@@ -32,8 +32,15 @@ export const site = {
   // collects spam.
 
   // The résumé lives at /resume as a real page. The PDF is a convenience for
-  // recruiters who ask for a file, not the primary artifact.
-  resumePdf: "/resume/rashi-kaushik-resume.pdf",
+  // recruiters who ask for a file, and it is hosted on Google Drive rather
+  // than in this repo — so the file can be swapped without a deploy.
+  //
+  // This is the id from the Drive share link, the part between /d/ and /view:
+  //   https://drive.google.com/file/d/THIS_PART/view?usp=sharing
+  //
+  // The file must be shared as "Anyone with the link -> Viewer", or the
+  // button lands recruiters on a request-access screen.
+  resumeFileId: "1letDpSaUHRF_3VOoaI_EGStALIGd2ZYS",
 
   education: {
     degree: "B.Tech, Computer Science & Engineering",
@@ -151,5 +158,11 @@ export const systems = [
     ],
   },
 ] as const;
+
+/** Forces the browser to download rather than open Drive's preview page. */
+export const resumeDownloadUrl = `https://drive.google.com/uc?export=download&id=${site.resumeFileId}`;
+
+/** Drive's own preview page, if you ever want to link to it instead. */
+export const resumeViewUrl = `https://drive.google.com/file/d/${site.resumeFileId}/view`;
 
 export type LensKey = keyof typeof lenses;
