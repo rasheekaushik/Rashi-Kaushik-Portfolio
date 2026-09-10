@@ -1,7 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Toolkit from "../components/Toolkit.astro";
-import { site } from "../site.config";
+import { site, resumeDownloadUrl } from "../site.config";
 
 // Delivery-first ordering: what she builds, then what she keeps running.
 const responsibilities = [
@@ -79,7 +79,7 @@ const projects = [
         </a>
         <a
           class="pill"
-          href={site.resumePdf}
+          href={resumeDownloadUrl}
           target="_blank"
           rel="noopener"
           >Download PDF<span class="sr-only"> (opens in a new tab)</span></a
